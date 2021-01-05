@@ -37,23 +37,33 @@ table tbody tr:nth-child(2n) td {
 }
 </style>
 <div class="cs-complaint-card">
-    <h2>Dostałem zepsute ziemniaki</h2>
-    <h4>Status: oczekuje</h4>
-    <p>gdzie pieniadze za las?Opis Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+    <h2><?php echo $complaint->title;?></h2>
+    <h4>Status: <?php echo $complaint->status;?></h4>
+    <p><?php echo $complaint->description;?></p>
 </div>
 
 <table class="cs-table">
-    <tr>
-        <td></td>
-        <td><div class="cs-message cs-employee">Dokonano zwrotu pieniędzy. Przepraszamy za pomyłkę.</div></td>
-        <td class="cs-user"><b>Kamil Nos<br>(Administrator)</b></td>
-    </tr>
-    <tr>
-        <td class="cs-user"><b>Jan Kowalski<br>(Ty)</b></td>
-        <td><div class="cs-message cs-customer">Ok spoko ziomeckzu a chcesz cos z avonu?</div></td>
-        <td></td>
-    </tr>
+    <?php
+        foreach($messages as $msg)
+        {
+            echo "<tr>";
+            if($msg->is_admin == 1)
+            {
+                echo "<td></td>";
+                echo "<td><div class='cs-message cs-employee'>$msg->message</div></td>";
+                echo "<td class='cs-user'><b>$msg->display_name<br>(Administrator)</b></td>";
+            }
+            else
+            {
+                echo "<td class='cs-user'><b>$msg->display_name<br>(Ty)</b></td>";
+                echo "<td><div class='cs-message cs-customer'>$msg->message</div></td>";
+                echo "<td></td>";
+            }
+            echo "</tr>";
+        }
+    ?>
 </table>
+
 <h3>Napisz wiadomość</h3>
 <form>
     <textarea>
