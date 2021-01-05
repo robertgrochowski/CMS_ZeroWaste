@@ -22,9 +22,8 @@ function add_complaint_section_in_order_details()
 
     global $wpdb;
     $exp = explode("/", $_SERVER["REQUEST_URI"]);
-    $order_id = $exp[3];
+    $order_id = $wpdb->_real_escape($exp[3]);
 
-    //TODO: sql injection
     //check if complaint is already submitted
     $results = $wpdb->get_results("SELECT id, status FROM {$wpdb->prefix}cs_complaints WHERE order_id={$order_id}", OBJECT);
 
@@ -65,19 +64,26 @@ function complaints_menu_content()
 {
     global $wpdb;
     $exp = explode("/", $_SERVER["REQUEST_URI"]);
-    $complaint_id = $exp[3];
-
-    $complaint = $wpdb->get_results("SELECT title, description, status 
+    $complaint_id = $wpdb->_real_escape($exp[3]);
+    $complaint = $wpdb->get_results("SELECT title, description, status, reporter_id 
                                         FROM {$wpdb->prefix}cs_complaints 
                                         WHERE id={$complaint_id}", OBJECT)[0];
+
+    if(isset($_POST) && isset($_POST['message'])) {
+        $user = wp_get_current_user();
+        $admin = $complaint->reporter_id == $user->ID ? 0 : 1;
+        $wpdb->insert("{$wpdb->prefix}cs_messages",
+            array('message' => $_POST['message'],
+                'user_id' => $user->ID,
+                'is_admin' => $admin,
+                'complaint_id' => $complaint_id,
+                'timestamp' => time()));
+    }
 
     $messages = $wpdb->get_results("SELECT cs.message, cs.timestamp, cs.user_id, cs.is_admin, usr.display_name
                                         FROM {$wpdb->prefix}cs_messages cs
                                         INNER JOIN wp_users usr ON usr.ID = cs.user_id
                                         WHERE complaint_id={$complaint_id}", OBJECT);
-
-    $user = wp_get_current_user();
-    var_dump($user->roles);
 
     // of course you can print dynamic content here, one of the most useful functions here is get_current_user_id()
     include("templates/complaint_ticket.php");

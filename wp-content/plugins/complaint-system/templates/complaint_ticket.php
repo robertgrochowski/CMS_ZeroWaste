@@ -65,10 +65,9 @@ table tbody tr:nth-child(2n) td {
 </table>
 
 <h3>Napisz wiadomość</h3>
-<form>
-    <textarea>
-
-    </textarea><br><br>
+<form action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post">
+    <label for="message">Treść wiadomości<abbr class="required" title="required">*</abbr></label>
+    <textarea name="message" id="message" required></textarea><br><br>
     <input type="submit"/>
 </form>
 
