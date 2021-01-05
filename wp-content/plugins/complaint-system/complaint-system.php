@@ -63,11 +63,36 @@ add_action('woocommerce_account_complaints_endpoint', 'complaints_menu_content')
 function complaints_menu_content()
 {
     global $wpdb;
+
     $exp = explode("/", $_SERVER["REQUEST_URI"]);
-    $complaint_id = $wpdb->_real_escape($exp[3]);
+    // We are on endpoint with complaint ID
+    if(isset($exp[3]) && !empty($exp[3])) {
+        $complaint_id = $wpdb->_real_escape($exp[3]);
+        show_complaint($complaint_id);
+        return;
+    }
+
+    // we are on endpoint with no ID
+    $user = wp_get_current_user();
+    $admin = in_array("administrator", (array) $user->roles);
+    $admin = false;
+    $query = "SELECT cs.id, cs.order_id, cs.title, cs.description, cs.status, cs.reporter_id, cs.timestamp, usr.display_name 
+              FROM {$wpdb->prefix}cs_complaints cs
+              INNER JOIN wp_users usr ON usr.ID = cs.reporter_id";
+
+    if(!$admin)
+        $query .= " WHERE reporter_id={$user->ID}";
+
+    $complaints = $wpdb->get_results($query, OBJECT);
+    include("templates/complaint_list.php");
+}
+
+function show_complaint($id){
+    global $wpdb;
+
     $complaint = $wpdb->get_results("SELECT title, description, status, reporter_id 
                                         FROM {$wpdb->prefix}cs_complaints 
-                                        WHERE id={$complaint_id}", OBJECT)[0];
+                                        WHERE id={$id}", OBJECT)[0];
 
     if(isset($_POST) && isset($_POST['message'])) {
         $user = wp_get_current_user();
@@ -76,18 +101,17 @@ function complaints_menu_content()
             array('message' => $_POST['message'],
                 'user_id' => $user->ID,
                 'is_admin' => $admin,
-                'complaint_id' => $complaint_id,
+                'complaint_id' => $id,
                 'timestamp' => time()));
     }
 
     $messages = $wpdb->get_results("SELECT cs.message, cs.timestamp, cs.user_id, cs.is_admin, usr.display_name
                                         FROM {$wpdb->prefix}cs_messages cs
                                         INNER JOIN wp_users usr ON usr.ID = cs.user_id
-                                        WHERE complaint_id={$complaint_id}", OBJECT);
+                                        WHERE complaint_id={$id}", OBJECT);
 
     // of course you can print dynamic content here, one of the most useful functions here is get_current_user_id()
     include("templates/complaint_ticket.php");
 }
-
 ?>
 
