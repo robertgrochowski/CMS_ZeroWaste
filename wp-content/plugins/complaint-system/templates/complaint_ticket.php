@@ -87,9 +87,9 @@ table tbody tr:nth-child(2n) td {
                 if(empty($user_title))
                     $user_title = '(Zgłaszający)<br>';
 
-                echo "<td class='cs-user'><b>$msg->display_name<br>$user_title $formatted_time</b></td>";
-                echo "<td><div class='cs-message cs-customer'>$msg->message</div></td>";
-                echo "<td></td>";
+                echo "<td width='15%' class='cs-user'><b>$msg->display_name<br>$user_title $formatted_time</b></td>";
+                echo "<td width='70%'><div class='cs-message cs-customer'>$msg->message</div></td>";
+                echo "<td width='15%'></td>";
             }
             echo "</tr>";
         }
