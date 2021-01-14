@@ -67,13 +67,38 @@ add_filter('woocommerce_account_menu_items', 'complaints_menu_link', 40);
 function complaints_menu_link($menu_links)
 {
 
+    /*$myorder = array(
+        'my-custom-endpoint' => __( 'My Stuff', 'woocommerce' ),
+        'edit-account'       => __( 'Change My Details', 'woocommerce' ),
+        'dashboard'          => __( 'Dashboard', 'woocommerce' ),
+        'orders'             => __( 'Orders', 'woocommerce' ),
+        'downloads'          => __( 'Download MP4s', 'woocommerce' ),
+        'edit-address'       => __( 'Addresses', 'woocommerce' ),
+        'payment-methods'    => __( 'Payment Methods', 'woocommerce' ),
+        'customer-logout'    => __( 'Logout', 'woocommerce' ),
+    );
+    return $myorder;*/
+
     $menu_links = array_slice($menu_links, 0, 5, true)
         + array('zgloszenia' => 'Zgłoszenia')
         + array_slice($menu_links, 5, NULL, true);
 
     return $menu_links;
-
 }
+
+add_filter( 'woocommerce_get_query_vars', 'myaccount_custom_endpoints_query_vars' );
+function myaccount_custom_endpoints_query_vars( $query_vars ) {
+    $query_vars['zgloszenia'] = 'zgloszenia';
+
+    return $query_vars;
+}
+
+add_filter( 'woocommerce_endpoint_zgloszenia_title', 'complaints_endpoint_title', 10, 2 );
+function complaints_endpoint_title( $title, $endpoint ) {
+    $title = __( "Zgłoszenia", "woocommerce" );
+    return $title;
+}
+
 
 add_action('init', 'complaints_menu_endpoint');
 function complaints_menu_endpoint()
