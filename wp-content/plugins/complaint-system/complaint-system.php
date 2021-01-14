@@ -48,7 +48,7 @@ function add_complaint_section_in_order_details()
     }
 
     //check if complaint is already submitted
-    $results = $wpdb->get_results("SELECT id, status FROM {$wpdb->prefix}cs_complaints WHERE order_id=12324", OBJECT);
+    $results = $wpdb->get_results("SELECT id, status FROM {$wpdb->prefix}cs_complaints WHERE order_id={$order_id}", OBJECT);
 
     if (empty($results)) {
         //stworz complaint
@@ -124,7 +124,7 @@ function show_complaint($id, $admin){
         }
     }
 
-    $complaint = $wpdb->get_results("SELECT title, description, status, reporter_id, timestamp, id
+    $complaint = $wpdb->get_results("SELECT title, description, status, reporter_id, timestamp, id, order_id
                                         FROM {$wpdb->prefix}cs_complaints 
                                         WHERE id={$id}", OBJECT)[0];
 
@@ -141,9 +141,9 @@ function show_complaint($id, $admin){
         show_success_msg("Dodano wiadomość pomyślnie!");
     }
 
-    $messages = $wpdb->get_results("SELECT cs.message, cs.timestamp, cs.user_id, cs.is_admin, usr.display_name
-                                        FROM {$wpdb->prefix}cs_messages cs
-                                        INNER JOIN wp_users usr ON usr.ID = cs.user_id
+    $messages = $wpdb->get_results("SELECT m.message, m.timestamp, m.user_id, m.is_admin, usr.display_name
+                                        FROM {$wpdb->prefix}cs_messages m
+                                        INNER JOIN {$wpdb->prefix}users usr ON usr.ID = m.user_id
                                         WHERE complaint_id={$id}", OBJECT);
 
     // of course you can print dynamic content here, one of the most useful functions here is get_current_user_id()

@@ -63,6 +63,7 @@ table tbody tr:nth-child(2n) td {
 <div class="cs-complaint-card">
     <h4>Zgłoszenie #<?php echo $complaint->id?></h4>
     <div><b>Tytuł</b>: <?php echo $complaint->title;?></div>
+    <div><b>Zamówienie</b>: <a href="/moje-konto/view-order/<?php echo $complaint->order_id;?>/">#<?php echo $complaint->order_id;?>: Przejdź do zamówienia</a></div>
     <div><b>Status</b>: <?php global $STATUS_TRANSLATION; echo $STATUS_TRANSLATION[$complaint->status];?></div>
     <div><b>Otwarto</b>: <?php echo get_date_from_gmt( date( 'Y-m-d H:i:s', $complaint->timestamp ), 'H:i:s d/m/Y' )?></div>
     <div><b>Treść</b>: <?php echo $complaint->description;?></div>
