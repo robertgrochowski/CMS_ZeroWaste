@@ -68,7 +68,7 @@ function complaints_menu_link($menu_links)
 {
 
     $menu_links = array_slice($menu_links, 0, 5, true)
-        + array('complaints' => 'Complaints')
+        + array('zgloszenia' => 'Zgłoszenia')
         + array_slice($menu_links, 5, NULL, true);
 
     return $menu_links;
@@ -80,7 +80,7 @@ function complaints_menu_endpoint()
 {
 
     // WP_Rewrite is my Achilles' heel, so please do not ask me for detailed explanation
-    add_rewrite_endpoint('complaints', EP_PAGES);
+    add_rewrite_endpoint('zgloszenia', EP_PAGES);
 
 }
 
