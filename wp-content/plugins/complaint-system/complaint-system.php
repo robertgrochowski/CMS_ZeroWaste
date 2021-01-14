@@ -14,6 +14,11 @@
  * Author:            Robert Grochowski, Marek Parr, Anna Żak, Katarzyna Jasica
  */
 
+// don't call the file directly
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 $STATUS_TRANSLATION = array(
     'opened'=>'w trakcie rozpatrywania',
     'closed'=>'zakończone');
@@ -178,5 +183,38 @@ function show_success_msg($msg) {
     echo '<div class="woocommerce-message" role="alert">'. $msg.'</div>';
 }
 
-?>
+register_activation_hook( __FILE__, 'create_plugin_database_table' );
+function create_plugin_database_table()
+{
+    global $wpdb;
+    require_once( ABSPATH . '/wp-admin/includes/upgrade.php' );
 
+    $sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}cs_complaints` (
+            `id` int(11) NOT NULL,
+          `reporter_id` int(11) NOT NULL,
+          `order_id` int(11) NOT NULL,
+          `title` varchar(80) NOT NULL,
+          `description` varchar(1000) NOT NULL,
+          `status` varchar(20) NOT NULL,
+          `timestamp` int(11) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+    dbDelta($sql);
+
+    $sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}cs_messages` (
+          `id` int(11) NOT NULL,
+          `complaint_id` int(11) NOT NULL,
+          `message` varchar(512) NOT NULL,
+          `timestamp` int(11) NOT NULL,
+          `user_id` int(11) NOT NULL,
+          `is_admin` tinyint(1) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+    dbDelta($sql);
+}
+
+register_uninstall_hook(__FILE__, 'delete_plugin_database_table');
+function delete_plugin_database_table(){
+    global $wpdb;
+    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}cs_complaints");
+    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}cs_messages");
+}
+?>
