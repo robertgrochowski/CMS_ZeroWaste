@@ -127,9 +127,8 @@ function show_complaint($id, $admin){
     $complaint = $wpdb->get_results("SELECT title, description, status, reporter_id, timestamp, id, order_id
                                         FROM {$wpdb->prefix}cs_complaints 
                                         WHERE id={$id}", OBJECT)[0];
-
+    $user = wp_get_current_user();
     if(isset($_POST) && isset($_POST['message'])) {
-        $user = wp_get_current_user();
         $admin = $complaint->reporter_id == $user->ID ? 0 : 1;
         $wpdb->insert("{$wpdb->prefix}cs_messages",
             array('message' => $_POST['message'],
