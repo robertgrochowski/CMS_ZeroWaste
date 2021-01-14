@@ -209,6 +209,11 @@ function create_plugin_database_table()
           `is_admin` tinyint(1) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
     dbDelta($sql);
+
+    $wpdb->query("ALTER TABLE `{$wpdb->prefix}cs_complaints` ADD PRIMARY KEY (`id`)");
+    $wpdb->query("ALTER TABLE `{$wpdb->prefix}cs_messages` ADD PRIMARY KEY (`id`)");
+    $wpdb->query("ALTER TABLE `{$wpdb->prefix}cs_complaints` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;");
+    $wpdb->query("ALTER TABLE `{$wpdb->prefix}cs_messages` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;");
 }
 
 register_uninstall_hook(__FILE__, 'delete_plugin_database_table');
