@@ -45,7 +45,7 @@ table tbody tr:nth-child(2n) td {
     font-size:0.7em;
 }
 </style>
-<?php if($admin): ?>
+<?php if($admin || $seller): ?>
 <div class="cs-complaint-admin-panel">
     <h4>Zarządzaj zgłoszeniem</h4>
     <div>
@@ -61,9 +61,15 @@ table tbody tr:nth-child(2n) td {
 </div>
 <?php endif;?>
 <div class="cs-complaint-card">
+	<?php 
+		if($seller)
+			$link = '/panel/orders';
+		else
+			$link = "/moje-konto/view-order/{$complaint->order_id}";
+	?>
     <h4>Zgłoszenie #<?php echo $complaint->id?></h4>
     <div><b>Tytuł</b>: <?php echo $complaint->title;?></div>
-    <div><b>Zamówienie</b>: <a href="/moje-konto/view-order/<?php echo $complaint->order_id;?>/">#<?php echo $complaint->order_id;?>: Przejdź do zamówienia</a></div>
+    <div><b>Zamówienie</b>: <a href="<?php echo $link;?>">#<?php echo $complaint->order_id;?>: Przejdź do zamówienia</a></div>
     <div><b>Status</b>: <?php global $STATUS_TRANSLATION; echo $STATUS_TRANSLATION[$complaint->status];?></div>
     <div><b>Otwarto</b>: <?php echo get_date_from_gmt( date( 'Y-m-d H:i:s', $complaint->timestamp ), 'H:i:s d/m/Y' )?></div>
     <div><b>Treść</b>: <?php echo $complaint->description;?></div>
@@ -74,10 +80,16 @@ table tbody tr:nth-child(2n) td {
         foreach($messages as $msg)
         {
             echo "<tr>";
+            $formatted_time = get_date_from_gmt( date( 'Y-m-d H:i:s', $msg->timestamp ), 'H:i d/m/Y' );
+            $user_title = '';
+
+            if($msg->user_id == $user->ID)
+                $user_title = '(Ty)<br>';
+
             if($msg->is_admin == 1)
             {
                 if(empty($user_title))
-                    $user_title = '(Administartor)<br>';
+                    $user_title = '(Sklep)<br>';
                 echo "<td width='15%'></td>";
                 echo "<td width='70%'><div class='cs-message cs-employee'>$msg->message</div></td>";
                 echo "<td width='15%' class='cs-user'><b>$msg->display_name<br>$user_title $formatted_time</b></td>";
@@ -95,7 +107,7 @@ table tbody tr:nth-child(2n) td {
         }
     ?>
 </table>
-<?php if($admin || $complaint->status != 'closed'): ?>
+<?php if($admin || $seller || $complaint->status != 'closed'): ?>
 <h3>Napisz wiadomość</h3>
 <form action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post">
     <label for="message">Treść wiadomości<abbr class="required" title="required">*</abbr></label>
