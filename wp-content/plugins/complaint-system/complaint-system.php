@@ -7,7 +7,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Complaint system
- * Description:       Description of the plugin.
+ * Description:       The ability of adding complaints to orders
  * Version:           1.0.0
  * Requires at least: 5.2
  * Requires PHP:      7.0
@@ -114,12 +114,15 @@ function complaints_menu_endpoint()
 
 }
 
-add_action('woocommerce_account_complaints_endpoint', 'complaints_menu_content');
+// /zgloszenia endpoint
+add_action('woocommerce_account_zgloszenia_endpoint', 'complaints_menu_content');
 function complaints_menu_content()
 {
     global $wpdb;
     $user = wp_get_current_user();
     $admin = in_array("administrator", (array) $user->roles);
+    $seller = in_array("seller", (array) $user->roles);
+	
 
     $exp = explode("/", $_SERVER["REQUEST_URI"]);
     // We are on endpoint with complaint ID
@@ -130,15 +133,24 @@ function complaints_menu_content()
     }
 
     // we are on endpoint with no ID
-    $query = "SELECT cs.id, cs.order_id, cs.title, cs.description, cs.status, cs.reporter_id, cs.timestamp, usr.display_name 
-              FROM {$wpdb->prefix}cs_complaints cs
-              INNER JOIN wp_users usr ON usr.ID = cs.reporter_id";
-    if(!$admin)
+    //$query = "SELECT cs.id, cs.order_id, cs.title, cs.description, cs.status, cs.reporter_id, cs.timestamp, usr.display_name 
+    //          FROM {$wpdb->prefix}cs_complaints cs
+    //          INNER JOIN wp_users usr ON usr.ID = cs.reporter_id";
+	$query = "SELECT cs.id, cs.order_id, cs.title, cs.description, cs.status, cs.reporter_id, cs.timestamp, usr.display_name
+              FROM wp_cs_complaints cs
+              LEFT JOIN wp_users usr ON usr.ID = cs.reporter_id
+              LEFT JOIN wp_dokan_orders ord ON ord.order_id = cs.order_id";
+	
+	if($seller && !$admin)
+		$query .= " WHERE ord.seller_id={$user->ID}";
+			  	  
+    else if(!$admin)
         $query .= " WHERE reporter_id={$user->ID}";
 
     $complaints = $wpdb->get_results($query, OBJECT);
     include("templates/complaint_list.php");
 }
+
 
 function show_complaint($id, $admin){
     global $wpdb;
@@ -174,7 +186,9 @@ function show_complaint($id, $admin){
                                         FROM {$wpdb->prefix}cs_messages m
                                         INNER JOIN {$wpdb->prefix}users usr ON usr.ID = m.user_id
                                         WHERE complaint_id={$id}", OBJECT);
+	
 
+    $seller = in_array("seller", (array) $user->roles);
     // of course you can print dynamic content here, one of the most useful functions here is get_current_user_id()
     include("templates/complaint_ticket.php");
 }
