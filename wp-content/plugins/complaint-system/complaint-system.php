@@ -7,7 +7,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Complaint system
- * Description:       Description of the plugin.
+ * Description:       The ability of adding complaints to orders
  * Version:           1.0.0
  * Requires at least: 5.2
  * Requires PHP:      7.0
@@ -151,6 +151,7 @@ function complaints_menu_content()
     include("templates/complaint_list.php");
 }
 
+
 function show_complaint($id, $admin){
     global $wpdb;
     global $STATUS_TRANSLATION;
@@ -185,7 +186,9 @@ function show_complaint($id, $admin){
                                         FROM {$wpdb->prefix}cs_messages m
                                         INNER JOIN {$wpdb->prefix}users usr ON usr.ID = m.user_id
                                         WHERE complaint_id={$id}", OBJECT);
+	
 
+    $seller = in_array("seller", (array) $user->roles);
     // of course you can print dynamic content here, one of the most useful functions here is get_current_user_id()
     include("templates/complaint_ticket.php");
 }

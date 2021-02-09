@@ -11,17 +11,23 @@
 .cs-message{
     margin:10px;
     min-height:50px;
-    padding:10px;
+    padding:15px;
     border-radius: 15px;
     max-width: 80%;
+	min-width:90px;
 }
 .cs-employee {
     float:right;
-    border:1px solid orange;
+	background-color: #348701;
+	color:white;
+	font-weight:bold;
 }
+
 .cs-customer {
     float:left;
-    border:1px solid gray;
+    background-color: gray;
+	color:white;
+	font-weight:bold;
 }
 .cs-user {
     text-align: center;
@@ -52,7 +58,7 @@ table tbody tr:nth-child(2n) td {
         <form action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post">
         <b>Zmień status</b>:
                 <select name="status" id="status">
-                    <option value="open">W trakcie rozpatrywania</option>
+                    <option value="opened">W trakcie rozpatrywania</option>
                     <option value="closed">Zakończone</option>
                 </select>
             <input type="submit"/>
@@ -61,7 +67,7 @@ table tbody tr:nth-child(2n) td {
 </div>
 <?php endif;?>
 <div class="cs-complaint-card">
-	<?php 
+    <?php 
 		if($seller)
 			$link = '/panel/orders';
 		else
@@ -112,7 +118,7 @@ table tbody tr:nth-child(2n) td {
 <form action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post">
     <label for="message">Treść wiadomości<abbr class="required" title="required">*</abbr></label>
     <textarea name="message" id="message" required></textarea><br><br>
-    <input type="submit"/>
+    <input value="Prześlij" type="submit"/>
 </form>
 <?php endif;?>
 
